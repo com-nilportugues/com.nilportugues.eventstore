@@ -1,12 +1,13 @@
 package com.nilportugues.eventstore;
 
 import com.nilportugues.eventstore.memory.InMemoryEventStore;
-import com.nilportugues.eventstore.memory.InMemoryEventStream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class InMemoryEventStoreTest {
@@ -32,23 +33,23 @@ public class InMemoryEventStoreTest {
         event.setPayload("{\"some_key\":\"some_value\"}");
         event.setOccurredOn(ZonedDateTime.parse("2017-03-22T00:00:00Z"));
 
-        final InMemoryEventStream eventStream = new InMemoryEventStream(VERSION_2);
+        final List<Event> eventStream = new ArrayList<>();
         eventStream.add(event);
 
         eventStore = new InMemoryEventStore();
-        eventStore.appendTo(EVENT_STREAM, VERSION_2, new InMemoryEventStream(eventStream));
+        eventStore.appendTo(EVENT_STREAM, VERSION_2, new ArrayList<>(eventStream));
     }
 
 
     @Test
     public void testAppendToStream() {
-        eventStore.appendTo(EVENT_STREAM, VERSION_1, InMemoryEventStream.empty());
+        eventStore.appendTo(EVENT_STREAM, VERSION_1, new ArrayList<>());
         Assert.assertTrue(eventStore.exists(EVENT_STREAM));
     }
 
     @Test
     public void testDeleteStream() {
-        eventStore.appendTo(EVENT_STREAM, VERSION_1, InMemoryEventStream.empty());
+        eventStore.appendTo(EVENT_STREAM, VERSION_1, new ArrayList<>());
         Assert.assertTrue(eventStore.exists(EVENT_STREAM));
 
         eventStore.delete(EVENT_STREAM);
@@ -78,11 +79,11 @@ public class InMemoryEventStoreTest {
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setTimeStart(ZonedDateTime.parse("2017-03-22T00:00:00Z"));
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 1);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 1);
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setTimeStart(ZonedDateTime.parse("2017-03-23T00:00:00Z"));
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 0);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 0);
     }
 
     @Test
@@ -91,11 +92,11 @@ public class InMemoryEventStoreTest {
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setTimeEnd(ZonedDateTime.parse("2017-03-22T00:00:00Z"));
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 1);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 1);
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setTimeEnd(ZonedDateTime.parse("2017-03-21T00:00:00Z"));
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 0);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 0);
     }
 
     @Test
@@ -104,11 +105,11 @@ public class InMemoryEventStoreTest {
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setAggregateId(UUID.randomUUID().toString());
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 0);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 0);
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setAggregateId(MY_AGGREGATE_ID);
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 1);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 1);
     }
 
     @Test
@@ -117,11 +118,11 @@ public class InMemoryEventStoreTest {
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setAggregateName("dogs");
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 0);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 0);
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setAggregateName(MY_AGGREGATE_NAME);
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 1);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 1);
     }
 
     @Test
@@ -130,11 +131,11 @@ public class InMemoryEventStoreTest {
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setEventId(UUID.randomUUID().toString());
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 0);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 0);
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setEventId(MY_EVENT_ID);
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 1);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 1);
     }
 
     @Test
@@ -143,11 +144,11 @@ public class InMemoryEventStoreTest {
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setEventName("dogs");
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 0);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 0);
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setEventName(MY_EVENT_NAME);
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 1);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 1);
     }
     
     @Test
@@ -156,10 +157,10 @@ public class InMemoryEventStoreTest {
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setEventVersion("51.0.1");
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 0);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 0);
 
         eventFilter = new EventFilter(EVENT_STREAM);
         eventFilter.setEventVersion(MY_EVENT_VERSION);
-        Assert.assertTrue(eventStore.load(eventFilter).size() == 1);
+        Assert.assertTrue(eventStore.load(eventFilter).count() == 1);
     }
 }

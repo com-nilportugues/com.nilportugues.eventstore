@@ -3,19 +3,15 @@ package com.nilportugues.eventstore.memory;
 import com.nilportugues.eventstore.Event;
 import com.nilportugues.eventstore.EventFilter;
 import com.nilportugues.eventstore.EventStore;
-import com.nilportugues.eventstore.EventStream;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class InMemoryEventStore implements EventStore {
 
-    private Map<String, EventStream> events = new HashMap<>();
+    private Map<String, List<Event>> events = new HashMap<>();
 
     @Override
     public boolean exists(final String streamName) {
@@ -23,34 +19,34 @@ public class InMemoryEventStore implements EventStore {
     }
 
     @Override
-    public EventStream load(final String streamName) {
-        final EventStream eventStream = this.events.get(streamName);
+    public Stream<Event> load(final String streamName) {
+        final List<Event> eventStream = this.events.get(streamName);
         if (null == eventStream) {
-            return InMemoryEventStream.empty();
+            return (new ArrayList<Event>()).stream();
         }
-        return eventStream;
+
+        return eventStream.stream();
     }
 
     @Override
-    public EventStream load(final EventFilter eventFilter) {
+    public Stream<Event> load(final EventFilter eventFilter) {
 
-        final EventStream eventStream = this.events.get(eventFilter.getStreamName().orElse(null));
+        List<Event> collect = this.events.get(eventFilter.getStreamName().orElse(null));
+        final Stream<Event> eventStream = collect.stream();
+
         if (null == eventStream) {
-            return InMemoryEventStream.empty();
+            return (new ArrayList<Event>()).stream();
         }
 
-        final List<Event> eventList = eventStream
-                .stream()
+        return eventStream
                 .filter(event -> filterTimeStart(event, eventFilter))
                 .filter(event -> filterTimeEnd(event, eventFilter))
                 .filter(event -> filterAggregateId(event, eventFilter))
                 .filter(event -> filterAggregateName(event, eventFilter))
                 .filter(event -> filterEventId(event, eventFilter))
                 .filter(event -> filterEventName(event, eventFilter))
-                .filter(event -> filterEventVersion(event, eventFilter))
-                .collect(Collectors.toList());
+                .filter(event -> filterEventVersion(event, eventFilter));
 
-        return new InMemoryEventStream(eventList);
     }
     
     private boolean filterTimeStart(Event event, EventFilter eventFilter) {
@@ -113,7 +109,7 @@ public class InMemoryEventStore implements EventStore {
 
     @Override
     public void appendTo(final String streamName, final long version, final List<Event> events) {
-        this.events.putIfAbsent(streamName, InMemoryEventStream.empty());
+        this.events.putIfAbsent(streamName, (new ArrayList<>()));
         this.events.get(streamName).addAll(events);
     }
 
