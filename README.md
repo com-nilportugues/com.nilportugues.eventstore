@@ -30,23 +30,9 @@ Now add the package as a dependency:
 </dependencies>  
 ```
 
-## Contribute
-
-Contributions to the package are always welcome!
-
-* Report any bugs or issues you find on the [issue tracker](/../../issues/new).
-
-## Support
-
-Get in touch with me using one of the following means:
-
- - Emailing me at <contact@nilportugues.com>
- - Opening an [Issue](/../../issues/new)
-
 ## Authors
 
-* [Nil Portugués Calderó](https://nilportugues.com)
-* [The Community Contributors](/../../graphs/contributors)
+* [Nil Portugués Calderó](https://nilportugues.com) (contact@nilportugues.com)
 
 
 ## License
