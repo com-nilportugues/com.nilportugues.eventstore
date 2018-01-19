@@ -5,7 +5,7 @@
 
     <groupId>com.nilportugues</groupId>
     <artifactId>eventstore</artifactId>
-    <version>master</version>
+    <version>0.0.5.RELEASE</version>
     <packaging>jar</packaging>
     <name>nilportugues/eventstore</name>
     <description>An EventStore implementation</description>
