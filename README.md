@@ -23,7 +23,7 @@ Now add the package as a dependency:
 ```xml
 <dependencies>		
   <dependency>
-    <groupId>com.nilportugues</groupId>
+    <groupId>com.github.com-nilportugues</groupId>
     <artifactId>eventstore</artifactId>
     <version>${eventstore.version}</version>
   </dependency>
