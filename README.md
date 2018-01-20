@@ -1,6 +1,6 @@
 # EventStore
 
-[![Build Status](https://travis-ci.org/com-nilportugues/com.nilportugues.eventstore.svg?branch=master)](https://travis-ci.org/com-nilportugues/com.nilportugues.eventstore)
+[![Build Status](https://travis-ci.org/com-nilportugues/eventstore.svg?branch=master)](https://travis-ci.org/com-nilportugues/eventstore)
 
 - Event Store interfaces 
 - InMemory EventStore implementation.
