@@ -9,6 +9,7 @@
     <packaging>jar</packaging>
     <name>nilportugues/eventstore</name>
     <description>An EventStore implementation</description>
+    <url>https://github.com/com-nilportugues/eventstore</url>
 
     <properties>
         <argLine>-Djava.security.egd=file:/dev/./urandom -Xmx512m</argLine>
@@ -22,7 +23,6 @@
 
 
     <dependencies>
-
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
@@ -72,8 +72,20 @@
     <build>
         <plugins>
             <!-- ***********************************************************
+             * COMPILE AS JAVA 8
+            ************************************************************ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!-- ***********************************************************
              * SONARQUBE
-             ************************************************************ -->
+            ************************************************************ -->
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
@@ -81,7 +93,7 @@
             </plugin>
             <!-- ***********************************************************
              * CODE QUALITY: FORMATTER
-             ************************************************************ -->
+            ************************************************************ -->
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
@@ -91,7 +103,7 @@
             </plugin>
             <!-- ***********************************************************
              * CODE QUALITY: ERROR PRONE
-             ************************************************************ -->
+            ************************************************************ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -141,29 +153,100 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <!-- ***********************************************************
+            * DEPLOY TO CENTRAL PLUGIN
+            ************************************************************ -->            
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.5</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <includes>
-                        <include>**/Test*.java</include>
-                        <include>**/*Test.java</include>
-                        <include>**/*Tests.java</include>
-                        <include>**/*TestCase.java</include>
-                    </includes>
-                    <properties>
-                    </properties>
+                    <serverId>oss.sonatype.org</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <description>${project.version}</description>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>${junit.platform.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+                <executions>
+                    <execution>
+                        <id>deploy-to-sonatype</id>
+                        <phase>deploy</phase>
+                        <goals>
+                        <goal>deploy</goal>
+                        <goal>release</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>            
         </plugins>
     </build>
 
+    
+    <!-- ***********************************************************
+    * DEPLOY TO CENTRAL REQUIRED BLOCKS
+    ************************************************************ -->
+    
+    <profiles>
+        <profile>
+          <id>release-sign-artifacts</id>
+          <activation>
+            <property>
+              <name>performRelease</name>
+              <value>true</value>
+            </property>
+          </activation>
+          <build>
+            <plugins>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                  <execution>
+                    <id>sign-artifacts</id>
+                    <phase>verify</phase>
+                    <goals>
+                      <goal>sign</goal>
+                    </goals>
+                  </execution>
+                </executions>
+              </plugin>
+            </plugins>
+          </build>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>oss.sonatype.org</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>oss.sonatype.org</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <licenses>
+        <license>
+        <name>MIT License</name>
+        <url>http://www.opensource.org/licenses/mit-license.php</url>
+        <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/com-nilportugues/eventstore</url>
+        <connection>scm:git:git@github.com:com-nilportugues/eventstore.git</connection>
+        <developerConnection>scm:git:git@github.com:com-nilportugues/eventstore.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+          <email>contact@nilportugues.com</email>
+          <name>Nil Portugués Calderó</name>
+          <url>https://nilportugues.com</url>
+          <id>nilportugues</id>
+        </developer>
+    </developers>    
+    
 </project>
